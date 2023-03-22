@@ -1,4 +1,4 @@
-FROM docker.io/library/ubuntu:focal-20230308
+FROM ghcr.io/k8s-at-home/ubuntu-focal:rolling
 
 ARG VERSION
 USER root
@@ -38,6 +38,7 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/ \
     /build \
+  && chmod -R u=rwX,go=rX /app \
   && printf "umask %d" "${UMASK}" >> /etc/bash.bashrc
 
 USER kah
