@@ -38,7 +38,6 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/ \
     /build \
-  && chmod -R u=rwX,go=rX /app \
   && printf "umask %d" "${UMASK}" >> /etc/bash.bashrc
 
 USER kah
