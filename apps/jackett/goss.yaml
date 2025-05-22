@@ -8,7 +8,7 @@ port:
     listening: true
 
 http:
-  http://localhost:9117/UI/Login:
-    status: 200
+  http://localhost:9117:
+    status: 400
     body:
-    - '<title>Jackett</title>'
+    - 'Cookies required'
