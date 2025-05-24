@@ -1,33 +1,49 @@
-# ⚠️ Deprecation and Archive Notice
-
-**Please use [onedr0p/containers](https://github.com/onedr0p/containers) instead**
-
 # Container Images
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-These [container images](https://github.com/k8s-at-home/container-images) are tailored for Kubernetes.
+This repository is a fork of the now-discontinued [k8s-at-home/container-images](https://github.com/k8s-at-home/container-images) project. It contains a curated selection of container images tailored for Kubernetes, which are personally used and maintained. Images are hosted on Github Container Registry [here](https://github.com/orgs/k8s-at-home/packages?ecosystem=container&visibility=public).
 
-Images are hosted on Github Container Registry [here](https://github.com/orgs/k8s-at-home/packages?ecosystem=container&visibility=public).
+## Selected Container Images
 
-## Purpose
+- [emby](./apps/emby/)
+- [jackett](./apps/jackett/)
+- [kubectl](./apps/kubectl/)
+- [plex](./apps/plex/)
+- [plex-pass](./apps/plex-pass/)
+- [podsync](./apps/podsync/)
+- [qbittorrent](./apps/qbittorrent/)
+- [radarr](./apps/radarr/)
+- [sonarr](./apps/sonarr/)
+- [tt-rss](./apps/tt-rss/)
+- [udp-broadcast-relay-redux](./apps/udp-broadcast-relay-redux/)
+- [wikijs](./apps/wikijs/)
+- [wireguard](./apps/wireguard/)
 
-The goal of this project is to support [semantic versioned](https://semver.org/), rootless, and multiple architecture containers for various applications.
+## Automated Image Building Workflow
 
-We try to keep a [KISS principle](https://en.wikipedia.org/wiki/KISS_principle) when building these images, which means no [s6-overlay](https://github.com/just-containers/s6-overlay) and all images are built on top of [ubuntu](https://hub.docker.com/_/ubuntu).
+This project uses GitHub Actions to automate the building, testing, and updating of container images. The workflow is primarily managed by two files:
 
-## Configuration
+### `release.yaml`
+This workflow is responsible for building and publishing the container images. It is triggered under the following conditions:
+- When changes are pushed to the `main` branch within the `apps/` or `base/` directories.
+- Manually, via the `workflow_dispatch` event on GitHub.
 
-For configuration see [here](https://docs.k8s-at-home.com).
+The key steps in this workflow include:
+- **Detecting Changes:** Identifies which container image definitions have been modified.
+- **Linting:** Uses Hadolint to check the `Dockerfile` for common errors and best practice violations.
+- **Building Images:** Builds container images for the platforms specified in the `PLATFORM` file and versions from the `VERSION` file located within each image's directory.
+- **Testing (GOSS):** If a `goss.yaml` file is present in the image's directory, [GOSS](https://github.com/goss-org/goss) tests are run against the built image to ensure its integrity and functionality.
+- **Publishing:** Pushes successfully built and tested images to Github Container Registry (GHCR). Images are tagged with `latest`, `rolling`, and a specific version tag (e.g., `v1.2.3`).
 
-## Support
-
-We have a few outlets for getting support with our projects:
-
-- Visit our [Docs](https://docs.k8s-at-home.com/).
-- Bugs or feature requests should be opened in an [issue](https://github.com/k8s-at-home/container-images/issues/new/choose).
-- Questions or comments should be discussed in our [Discord](https://discord.gg/sTMX7Vh) or via [Github discussions](https://github.com/k8s-at-home/organization/discussions).
+### `schedule.yaml`
+This workflow helps keep the application versions up-to-date.
+- It runs on a predefined schedule (e.g., every 12 hours) and can also be triggered manually.
+- For each application in the `apps/` and `base/` directories, it executes a `latest-version.sh` script (if present).
+- These scripts are designed to fetch the latest available version of the application from its source.
+- If a new version is found, the `VERSION` file within the respective image's directory is updated.
+- This update to the `VERSION` file, when pushed to the `main` branch, subsequently triggers the `release.yaml` workflow to build and publish the new version of the container image.
 
 ## Contributors ✨
 
